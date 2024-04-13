@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -eux
+
+FILE_LIST=$(mktemp)
+
+cd $(dirname $0)/..
+git ls-files > ${FILE_LIST}
+rsync -av --files-from=${FILE_LIST} . ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_DIRECTORY}
+
+ssh -t ${DEPLOY_USER}@${DEPLOY_HOST} "
+   cd ${DEPLOY_DIRECTORY}
+   docker compose -f docker-compose.yml build
+   docker compose -f docker-compose.yml up --detach
+"

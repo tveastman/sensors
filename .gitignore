@@ -1,0 +1,14 @@
+/.env
+/.envrc
+
+__pycache__
+.pytest_cache
+celerybeat-schedule
+staticfiles/*
+.coverage
+
+.mypy_cache/
+.idea/
+report_mypy
+/database/
+db.sqlite3

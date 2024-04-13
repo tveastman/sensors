@@ -1,0 +1,29 @@
+services:
+  app:
+    build: .
+    command: gunicorn -b 0.0.0.0:5000 sensors.wsgi
+    init: true
+    read_only: true
+    logging:
+      driver: journald
+    env_file:
+      - .env
+    tmpfs:
+      - /tmp
+    ports:
+      - "5000:5000"
+    volumes:
+      - database:/app/database/
+    labels:
+     - traefik.http.routers.sensors.rule=Host(`sensors.eastm.nz`)
+     - traefik.http.routers.sensors.middlewares=test-ratelimit
+     - "traefik.http.middlewares.test-ratelimit.ratelimit.average=60"
+     - "traefik.http.middlewares.test-ratelimit.ratelimit.burst=120"
+     - "traefik.http.middlewares.test-ratelimit.ratelimit.period=1m"
+     - traefik.http.routers.sensors.tls=true
+     - traefik.http.routers.sensors.tls.certresolver=myresolver
+     - traefik.enable=true
+
+volumes:
+  database:
+

@@ -1,0 +1,11 @@
+**
+
+!/LICENSE
+!/manage.py
+!/poetry.lock
+!/pyproject.toml
+!/sensors/static
+!/sensors/templates
+!/sensors/migrations
+!/sensors/management
+!/sensors/**/*.py
