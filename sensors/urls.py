@@ -24,8 +24,8 @@ router = rest_framework.routers.DefaultRouter()
 router.register(r"readings", sensors.views.ReadingViewSet)
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", sensors.views.Home.as_view()),
+    path("admin/", admin.site.urls, name="admin:index"),
+    path("", sensors.views.Home.as_view(), name="home"),
     path("api/", include(router.urls)),
     path("api/auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]
