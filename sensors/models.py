@@ -10,8 +10,8 @@ class Reading(models.Model):
     )
     gatewayFree = models.FloatField(null=True, blank=True)
     gatewayLoad = models.FloatField(null=True, blank=True)
-    mac = models.CharField(max_length=20, db_index=True)
-    timestamp = models.DateTimeField(db_index=True)
+    mac = models.CharField(max_length=20)
+    timestamp = models.DateTimeField()
     type = models.CharField(max_length=20)
     bleName = models.CharField(max_length=20, null=True, blank=True)
     battery = models.FloatField(null=True, blank=True)
@@ -22,3 +22,12 @@ class Reading(models.Model):
 
 class User(django.contrib.auth.models.AbstractUser):
     id = models.UUIDField(primary_key=True, default=get_uuid7, editable=False)
+
+
+class Device(models.Model):
+    id = models.UUIDField(primary_key=True, default=get_uuid7, editable=False)
+    owner = models.ForeignKey(
+        "sensors.User", related_name="devices", on_delete=models.CASCADE
+    )
+    mac = models.CharField(max_length=20)
+    name = models.CharField(max_length=50)

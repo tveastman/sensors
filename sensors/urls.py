@@ -22,6 +22,7 @@ import sensors.views
 
 router = rest_framework.routers.DefaultRouter()
 router.register(r"readings", sensors.views.ReadingViewSet)
+router.register(r"devices", sensors.views.DeviceViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin:index"),

@@ -25,3 +25,13 @@ class ReadingAdmin(admin.ModelAdmin):
     )
     list_filter = ("owner", "mac")
     date_hierarchy = "timestamp"
+
+
+@admin.register(sensors.models.Device)
+class DeviceAdmin(admin.ModelAdmin):
+    list_display = (
+        "owner",
+        "mac",
+        "name",
+    )
+    list_filter = ("owner",)
