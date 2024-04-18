@@ -1,3 +1,4 @@
+
 from django.db import models
 from sensors.uuid7 import get_uuid7
 import django.contrib.auth.models
@@ -22,6 +23,29 @@ class Reading(models.Model):
 
 class User(django.contrib.auth.models.AbstractUser):
     id = models.UUIDField(primary_key=True, default=get_uuid7, editable=False)
+
+    def latest_readings(self):
+        devices = {device.mac: device for device in Device.objects.filter(owner=self)}
+        macs = devices.keys()
+        qs = (
+            Reading.objects.filter(
+                owner=self,
+                mac__in=macs,
+            )
+            .annotate(
+                latest_timestamp=models.Window(
+                    expression=models.functions.FirstValue("timestamp"),
+                    partition_by=["mac"],
+                    order_by=models.F("timestamp").desc(),
+                )
+            )
+            .filter(timestamp=models.F("latest_timestamp"))
+        )
+        latest = []
+        for reading in qs:
+            name = devices[reading.mac].name
+            latest.append([name, reading])
+        return latest
 
 
 class Device(models.Model):
