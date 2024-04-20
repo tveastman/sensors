@@ -1,4 +1,3 @@
-
 from django.db import models
 from sensors.uuid7 import get_uuid7
 import django.contrib.auth.models
