@@ -215,3 +215,10 @@ structlog.configure(
 )
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 5_000
+
+STORAGES = {
+    # ...
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}

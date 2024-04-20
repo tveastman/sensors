@@ -1,6 +1,10 @@
+from collections import defaultdict
+from datetime import timedelta
+
 from django.db import models
 from sensors.uuid7 import get_uuid7
 import django.contrib.auth.models
+import django.utils.timezone
 
 
 class Reading(models.Model):
@@ -45,6 +49,30 @@ class User(django.contrib.auth.models.AbstractUser):
             name = devices[reading.mac].name
             latest.append([name, reading])
         return latest
+
+    def get_chart_data(self):
+        devices = Device.objects.filter(owner=self)
+        names = {d.mac: d.name for d in devices}
+        readings = Reading.objects.filter(
+            owner=self, mac__in=[d.mac for d in devices],
+            timestamp__gt=django.utils.timezone.now() - timedelta(hours=24)
+        ).order_by("-timestamp")
+        datasets = defaultdict(list)
+        hour = 60 * 60
+        now = django.utils.timezone.now().timestamp() / hour
+        for reading in readings:
+            name = names[reading.mac]
+            t = reading.timestamp.timestamp() / hour
+            x = now - t
+            datasets[name].append(dict(x=x, y=reading.temperature))
+        data = {
+            "datasets": [
+                dict(data=data, showLine=True, label=label)
+                for label, data in datasets.items()
+            ],
+        }
+        return data
+
 
 
 class Device(models.Model):

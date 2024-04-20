@@ -1,9 +1,10 @@
 import django.views
+import json
 
 import structlog
 import rest_framework.viewsets
 import rest_framework.permissions
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 import sensors.serializers
 import sensors.permissions
@@ -67,3 +68,14 @@ class DeviceViewSet(rest_framework.viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+
+class Chart(LoginRequiredMixin, django.views.generic.TemplateView):
+    template_name = "chart.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        data = self.request.user.get_chart_data()
+        encoded = json.dumps(data, indent=2)
+        context["data"] = encoded
+        return context

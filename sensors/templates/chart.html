@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chart</title>
+    <meta http-equiv="refresh" content="300">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+
+<div>
+  <canvas id="temperatureChart"></canvas>
+</div>
+
+  <script>
+    const ctx = document.getElementById('temperatureChart');
+    const data = {{ data|safe }};
+
+    new Chart(ctx, {
+      type: 'scatter',
+      data: data,
+      options: {parsing: false, normalized: true, pointRadius: 0, animation: false,
+        plugins: {
+          legend: {
+            position: 'left',
+          }
+        }
+      }
+    })
+  </script>
+
+  </body>
+</html>
+
