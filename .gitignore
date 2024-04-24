@@ -10,5 +10,8 @@ staticfiles/*
 .mypy_cache/
 .idea/
 report_mypy
+
 /database/
-db.sqlite3
+/dist/
+/node_modules/
+/.parcel-cache/

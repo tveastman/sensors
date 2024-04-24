@@ -1,0 +1,3 @@
+django: ./manage.py runserver
+parcel: npm watch
+

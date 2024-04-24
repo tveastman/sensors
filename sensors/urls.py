@@ -30,4 +30,5 @@ urlpatterns = [
     path("c/", sensors.views.Chart.as_view(), name="chart"),
     path("api/", include(router.urls)),
     path("api/auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path("test/", sensors.views.Test.as_view(), name="test"),
 ]

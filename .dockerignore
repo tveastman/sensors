@@ -9,3 +9,7 @@
 !/sensors/migrations
 !/sensors/management
 !/sensors/**/*.py
+!/package.json
+!/package-lock.json
+
+!/assets/**/*.ts

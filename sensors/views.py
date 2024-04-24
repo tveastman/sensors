@@ -79,3 +79,7 @@ class Chart(LoginRequiredMixin, django.views.generic.TemplateView):
         encoded = json.dumps(data, indent=2)
         context["data"] = encoded
         return context
+
+
+class Test(django.views.generic.TemplateView):
+    template_name = "test.html"

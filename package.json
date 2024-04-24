@@ -1,0 +1,31 @@
+{
+  "name": "sensors",
+  "version": "1.0.0",
+  "description": "## TODO",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "parcel watch",
+    "build": "parcel build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.12.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.2"
+  },
+  "source": [
+    "assets/main.ts"
+  ],
+  "browser": "dist/main.js",
+  "targets": {
+    "browser": {
+      "outputFormat": "esmodule",
+      "isLibrary": false,
+      "includeNodeModules": true
+    }
+  }
+}

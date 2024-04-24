@@ -17,6 +17,7 @@ gunicorn = "^21.2.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.3.7"
+honcho = "^1.1.0"
 
 [build-system]
 requires = ["poetry-core"]

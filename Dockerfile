@@ -1,10 +1,15 @@
 FROM node:21-bookworm as node
 WORKDIR /app
-COPY assets/ package.json package-lock.json /app/
+
+COPY package.json package-lock.json /app/
 RUN --mount=type=cache,target=/app/node_modules \
-    npm
+    npm install
 
+COPY assets /app/assets/
+RUN --mount=type=cache,target=/app/node_modules \
+    npm run build
 
+    
 FROM python:3.12-bookworm
 
 ENV POETRY_HOME=/opt/poetry \
@@ -26,6 +31,8 @@ RUN --mount=type=cache,target=/root/.cache \
 
 RUN useradd app
 COPY --chown=app . /app
+COPY --from=node --chown=app /app/dist /app/dist
+
 WORKDIR /app
 RUN python -m compileall -q . && python manage.py collectstatic --noinput --no-color
 USER app
