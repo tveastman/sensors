@@ -1,3 +1,10 @@
+FROM node:21-bookworm as node
+WORKDIR /app
+COPY assets/ package.json package-lock.json /app/
+RUN --mount=type=cache,target=/app/node_modules \
+    npm
+
+
 FROM python:3.12-bookworm
 
 ENV POETRY_HOME=/opt/poetry \
