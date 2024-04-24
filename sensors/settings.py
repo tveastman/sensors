@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "django_filters",
     "request",
     "sensors",
 ]
@@ -134,8 +135,11 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": [
+       'django_filters.rest_framework.DjangoFilterBackend'
+    ],
     "DEFAULT_PAGINATION_CLASS": "sensors.pagination.IdPagination",
-    "PAGE_SIZE": 200,
+    "PAGE_SIZE": 1000,
 }
 
 AUTH_USER_MODEL = "sensors.User"

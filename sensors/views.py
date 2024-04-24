@@ -1,7 +1,9 @@
 import django.views
 import json
 
+import django_filters
 import structlog
+import rest_framework.filters
 import rest_framework.viewsets
 import rest_framework.permissions
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -9,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 import sensors.serializers
 import sensors.permissions
 import sensors.models
+from . import filters
 
 logger = structlog.get_logger()
 
@@ -32,6 +35,7 @@ class ReadingViewSet(rest_framework.viewsets.ModelViewSet):
     ]
     queryset = sensors.models.Reading.objects.none()
     serializer_class = sensors.serializers.ReadingSerializer
+    filterset_class = filters.Reading
 
     def get_queryset(self):
         """

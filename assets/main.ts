@@ -1,8 +1,8 @@
-console.log("top")
-import Chart from 'chart.js/auto';
+import Chart, { ChartItem } from 'chart.js/auto';
 
 export function hello() {
-    const ctx = document.getElementById('myChart');
+    const ctx = document.getElementById('myChart')!
+
 
     new Chart(ctx, {
         type: 'bar',
@@ -21,7 +21,6 @@ export function hello() {
             }
           }
         }
-      });
+      })
     
 }
-console.log("bottom")
