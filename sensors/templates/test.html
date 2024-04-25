@@ -1,17 +1,26 @@
 <!DOCTYPE html>
+<title>TEST</title>
 {% load static %}
 <html>
 
 <body>
-    <strong>hi</strong>
+    <!-- style="width: 600px;height:400px;" -->
+    <style>
+        #main,
+        html,
+        body {
+          width: 100%;
+        }
+        #main {
+          height: 700px;
+        }
+      </style>
+      <div id="main"></div>
 
-    <div>
-        <canvas id="myChart"></canvas>
-    </div>
-
-    <script type="module">
+    <!-- <script type="module">
         import {hello} from "{% static 'main.js' %}"
         hello();
-    </script>    
+    </script>     -->
+    <script src="{% static 'main.js' %}"></script>
 </body>
 </html>

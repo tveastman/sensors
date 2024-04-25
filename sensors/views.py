@@ -36,6 +36,7 @@ class ReadingViewSet(rest_framework.viewsets.ModelViewSet):
     queryset = sensors.models.Reading.objects.none()
     serializer_class = sensors.serializers.ReadingSerializer
     filterset_class = filters.Reading
+    ordering_fields = ['timestamp']
 
     def get_queryset(self):
         """
