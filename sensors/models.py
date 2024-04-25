@@ -7,6 +7,7 @@ import django.contrib.auth.models
 import django.utils.timezone
 import functools
 
+
 @functools.lru_cache(maxsize=100)
 def _get_device_name(owner, mac, time):
     try:
@@ -15,8 +16,10 @@ def _get_device_name(owner, mac, time):
     except Device.DoesNotExist:
         return None
 
+
 def get_device_name(owner, mac):
     return _get_device_name(owner, mac, time.time() // 5)
+
 
 class Reading(models.Model):
     id = models.UUIDField(primary_key=True, default=get_uuid7, editable=False)
@@ -69,8 +72,9 @@ class User(django.contrib.auth.models.AbstractUser):
         devices = Device.objects.filter(owner=self)
         names = {d.mac: d.name for d in devices}
         readings = Reading.objects.filter(
-            owner=self, mac__in=[d.mac for d in devices],
-            timestamp__gt=django.utils.timezone.now() - timedelta(hours=24)
+            owner=self,
+            mac__in=[d.mac for d in devices],
+            timestamp__gt=django.utils.timezone.now() - timedelta(hours=24),
         ).order_by("-timestamp")
         datasets = defaultdict(list)
         hour = 60 * 60
@@ -87,7 +91,6 @@ class User(django.contrib.auth.models.AbstractUser):
             ],
         }
         return data
-
 
 
 class Device(models.Model):

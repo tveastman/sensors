@@ -1,12 +1,10 @@
 import django.views
 import json
 
-import django_filters
 import structlog
 import rest_framework.filters
 import rest_framework.viewsets
 import rest_framework.permissions
-import rest_framework_msgpack.renderers
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 import sensors.serializers
@@ -37,7 +35,7 @@ class ReadingViewSet(rest_framework.viewsets.ModelViewSet):
     queryset = sensors.models.Reading.objects.none()
     serializer_class = sensors.serializers.ReadingSerializer
     filterset_class = filters.Reading
-    ordering_fields = ['timestamp']
+    ordering_fields = ["timestamp"]
 
     def get_queryset(self):
         """
