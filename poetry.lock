@@ -127,6 +127,20 @@ files = [
 django = ">=3.0"
 
 [[package]]
+name = "djangorestframework-queryfields"
+version = "1.1.0"
+description = "Serialize a partial subset of fields in the API"
+optional = false
+python-versions = "*"
+files = [
+    {file = "djangorestframework-queryfields-1.1.0.tar.gz", hash = "sha256:512516947e2d0f7b132469bc3b96b702653ed032e450d90b6efc0dc7fe031ef7"},
+    {file = "djangorestframework_queryfields-1.1.0-py2.py3-none-any.whl", hash = "sha256:3952e02fd800de34a0fc64963bcaf7eb1e9ad688f120b1bca5b261843323f36e"},
+]
+
+[package.extras]
+dev = ["coveralls", "django", "djangorestframework", "mock-django", "pytest", "pytest-cov", "pytest-django", "pytz", "setuptools", "wheel"]
+
+[[package]]
 name = "gunicorn"
 version = "21.2.0"
 description = "WSGI HTTP Server for UNIX"
@@ -311,4 +325,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "5ccde59963e012090ec98750d765b17768fde214a8d3ed5b209644a426f9c8fd"
+content-hash = "66406b2ebdb0d2455f6907743812a11b63a0cc18184b22e7de2b894b853f627c"

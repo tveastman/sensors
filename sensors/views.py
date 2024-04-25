@@ -47,6 +47,7 @@ class ReadingViewSet(rest_framework.viewsets.ModelViewSet):
         return sensors.models.Reading.objects.filter(owner=user).order_by("-id")
 
     def get_serializer(self, *args, **kwargs):
+        logger.debug("get_serializer", args=args, kwargs=kwargs)
         if isinstance(kwargs.get("data"), list):
             kwargs["many"] = True
         return super().get_serializer(*args, **kwargs)

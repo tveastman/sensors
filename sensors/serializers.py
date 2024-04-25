@@ -1,9 +1,10 @@
 import rest_framework.serializers
 
 import sensors.models
+from drf_queryfields import QueryFieldsMixin
 
 
-class ReadingSerializer(rest_framework.serializers.HyperlinkedModelSerializer):
+class ReadingSerializer(QueryFieldsMixin, rest_framework.serializers.HyperlinkedModelSerializer):
     class Meta:
         model = sensors.models.Reading
         exclude = ["owner"]

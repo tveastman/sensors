@@ -19,7 +19,7 @@ interface Series {
 async function getData() {
   const now = new Date()
   const one_day_ago = new Date(+now - (24 * 60 * 60 * 1000))
-  const url = encodeURI(`/api/readings/?timestamp__gt=${one_day_ago.toISOString()}&ordering=timestamp&limit=2000`)
+  const url = encodeURI(`/api/readings/?fields=mac,timestamp,temperature,humidity&timestamp__gt=${one_day_ago.toISOString()}&ordering=timestamp&limit=2000`)
   const response = await fetch(url)
   const data = await response.json()
 
@@ -70,7 +70,7 @@ option = {
   yAxis: {
     type: 'value',
     position: 'right',
-    boundaryGap: [0, '100%'],
+    //boundaryGap: [0, '100%'],
     splitLine: {
       show: true
     },
