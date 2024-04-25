@@ -1,11 +1,22 @@
 from collections import defaultdict
 from datetime import timedelta
-
+import time
 from django.db import models
 from sensors.uuid7 import get_uuid7
 import django.contrib.auth.models
 import django.utils.timezone
+import functools
 
+@functools.lru_cache(maxsize=100)
+def _get_device_name(owner, mac, time):
+    try:
+        device = Device.objects.get(owner=owner, mac=mac)
+        return device.name
+    except Device.DoesNotExist:
+        return None
+
+def get_device_name(owner, mac):
+    return _get_device_name(owner, mac, time.time() // 5)
 
 class Reading(models.Model):
     id = models.UUIDField(primary_key=True, default=get_uuid7, editable=False)
@@ -22,6 +33,10 @@ class Reading(models.Model):
     humidity = models.FloatField(null=True, blank=True)
     temperature = models.FloatField(null=True, blank=True)
     rssi = models.FloatField(null=True, blank=True)
+
+    @property
+    def device_name(self):
+        return get_device_name(self.owner, self.mac)
 
 
 class User(django.contrib.auth.models.AbstractUser):

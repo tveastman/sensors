@@ -20,13 +20,13 @@ interface Series {
 async function getData() {
   const now = new Date()
   const one_day_ago = new Date(+now - (24 * 60 * 60 * 1000))
-  const url = encodeURI(`/api/readings/?fields=mac,timestamp,temperature,humidity&timestamp__gt=${one_day_ago.toISOString()}&ordering=timestamp&limit=2000`)
+  const url = encodeURI(`/api/readings/?fields=device_name,mac,timestamp,temperature,humidity&timestamp__gt=${one_day_ago.toISOString()}&ordering=timestamp&limit=2000`)
   const response = await fetch(url, {
     headers: {
       'Accept': 'application/msgpack'
     }
   })
-  const data = await decodeAsync(response.body);
+  const data = await decodeAsync(response.body!);
 
   let series_data = new Map()
 
@@ -34,31 +34,36 @@ async function getData() {
     if (reading.temperature === null) {
       continue
     }
-    if (!series_data.has(reading.mac)) {
-      series_data.set(reading.mac, 
+    const name = reading.device_name
+    if (!series_data.has(name)) {
+      series_data.set(name, 
         {
-          name: reading.mac,
+          name: name,
           type: 'line',
           showSymbol: false,
           data: []
         }
-
       )
     }
-    series_data.get(reading.mac).data.push(
+    series_data.get(name).data.push(
       {
-        name: reading.mac,
+        name: name,
         value: [reading.timestamp, reading.temperature]
       }
     )
   }
   const series_array = Array.from(series_data, ([name, value]) => value)
+  series_array.sort((a, b) => a.name < b.name ? -1: 1);
   return series_array
 }
 
 option = {
   title: {
     text: 'Temperature'
+  },
+  legend: {    
+    orient: 'horizontal',
+    bottom: 5
   },
   tooltip: {
     trigger: 'axis',
