@@ -18,15 +18,15 @@ logger = structlog.get_logger()
 
 
 # Create your views here.
-class Home(django.views.generic.TemplateView):
+class Home(LoginRequiredMixin, django.views.generic.TemplateView):
     template_name = "home.html"
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        user: sensors.models.User = self.request.user
-        if user.is_authenticated:
-            context["latest_readings"] = user.latest_readings()
-        return context
+    # def get_context_data(self, *args, **kwargs):
+    #     context = super().get_context_data(*args, **kwargs)
+    #     user: sensors.models.User = self.request.user
+    #     if user.is_authenticated:
+    #         context["latest_readings"] = user.latest_readings()
+    #     return context
 
 
 class ReadingViewSet(rest_framework.viewsets.ModelViewSet):

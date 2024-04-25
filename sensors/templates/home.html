@@ -27,5 +27,20 @@
     </table>
 {% endif %}
 
+<style>
+    #main,
+    html,
+    body {
+      width: 100%;
+    }
+    #main {
+      height: 500px;
+    }
+  </style>
+  <div id="main"></div>
+{% load static %}
+<script src="{% static 'main.js' %}"></script>
+
+
 </body>
 </html>

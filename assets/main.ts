@@ -1,7 +1,24 @@
-import * as echarts from 'echarts';
-import { decodeAsync } from "@msgpack/msgpack";
+import * as echarts from 'echarts/core';
+import { EChartsOption } from 'echarts';
+import { LineChart } from 'echarts/charts';
+import { CanvasRenderer } from 'echarts/renderers';
+import {
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  LegendComponent
+} from 'echarts/components';
 
-type EChartsOption = echarts.EChartsOption;
+echarts.use([
+  LineChart,
+  CanvasRenderer,
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent
+])
+
+import { decodeAsync } from "@msgpack/msgpack";
 
 const chartDom = document.getElementById('main')!;
 var myChart = echarts.init(chartDom);
@@ -95,7 +112,7 @@ option = {
 
 
 myChart.showLoading()
-myChart.setOption(option)
+myChart.setOption<EChartsOption>(option)
 
 getData().then((value) => {
   option['series'] = value
@@ -110,7 +127,7 @@ window.addEventListener('resize', function() {
 setInterval(() => {
   console.log("updating series data")
   getData().then((series_data) => {
-    myChart.setOption({
+    myChart.setOption<EChartsOption>({
       series: series_data
     })
   })

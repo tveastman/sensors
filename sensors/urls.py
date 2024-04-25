@@ -27,8 +27,8 @@ router.register(r"devices", sensors.views.DeviceViewSet)
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin:index"),
     path("", sensors.views.Home.as_view(), name="home"),
-    path("c/", sensors.views.Chart.as_view(), name="chart"),
+    # path("c/", sensors.views.Chart.as_view(), name="chart"),
     path("api/", include(router.urls)),
     path("api/auth/", include("rest_framework.urls", namespace="rest_framework")),
-    path("test/", sensors.views.Test.as_view(), name="test"),
+    # path("test/", sensors.views.Test.as_view(), name="test"),
 ]
