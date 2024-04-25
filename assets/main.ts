@@ -1,4 +1,5 @@
 import * as echarts from 'echarts';
+import { decodeAsync } from "@msgpack/msgpack";
 
 type EChartsOption = echarts.EChartsOption;
 
@@ -20,8 +21,12 @@ async function getData() {
   const now = new Date()
   const one_day_ago = new Date(+now - (24 * 60 * 60 * 1000))
   const url = encodeURI(`/api/readings/?fields=mac,timestamp,temperature,humidity&timestamp__gt=${one_day_ago.toISOString()}&ordering=timestamp&limit=2000`)
-  const response = await fetch(url)
-  const data = await response.json()
+  const response = await fetch(url, {
+    headers: {
+      'Accept': 'application/msgpack'
+    }
+  })
+  const data = await decodeAsync(response.body);
 
   let series_data = new Map()
 

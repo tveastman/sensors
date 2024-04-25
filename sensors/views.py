@@ -6,6 +6,7 @@ import structlog
 import rest_framework.filters
 import rest_framework.viewsets
 import rest_framework.permissions
+import rest_framework_msgpack.renderers
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 import sensors.serializers
