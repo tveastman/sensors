@@ -5,42 +5,19 @@
     <p><a href="{% url 'admin:index' %}">Admin</a></p>
     <p><a href="{% url 'api-root' %}">API</a></p>
 
-{% if latest_readings %}
-
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Temperature</th>
-            <th>Humidity</th>
-            <th>Time</th>
-        </tr>
-
-        {% for name, reading in latest_readings %}
-            <tr>
-                <td>{{ name }}</td>
-                <td>{{ reading.temperature }}</td>
-                <td>{{ reading.humidity }}</td>
-                <td>{{ reading.timestamp |timesince }}</td>
-            </tr>
-        {%  endfor %}
-
-    </table>
-{% endif %}
-
-<style>
-    #main,
-    html,
-    body {
-      width: 100%;
-    }
-    #main {
-      height: 500px;
-    }
-  </style>
-  <div id="main"></div>
-{% load static %}
-<script src="{% static 'main.js' %}"></script>
-
-
+    <style>
+        #temperature_chart, #humidity_chart,
+        html,
+        body {
+        width: 100%;
+        }
+        #temperature_chart, #humidity_chart {
+        height: 500px;
+        }
+    </style>
+    <div class="chart" id="temperature_chart"></div>
+    <div class="chart" id="humidity_chart"></div>
+    {% load static %}
+    <script src="{% static 'main.js' %}"></script>
 </body>
 </html>

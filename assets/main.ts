@@ -1,5 +1,5 @@
 import * as echarts from 'echarts/core';
-import { EChartsOption } from 'echarts';
+import { EChartsOption, LineSeriesOption } from 'echarts';
 import { LineChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 import {
@@ -8,6 +8,8 @@ import {
   GridComponent,
   LegendComponent
 } from 'echarts/components';
+import Graph from 'echarts/types/src/data/Graph.js';
+import { graphic_d } from 'echarts/types/dist/shared.js';
 
 echarts.use([
   LineChart,
@@ -18,42 +20,42 @@ echarts.use([
   GridComponent
 ])
 
-import { decodeAsync } from "@msgpack/msgpack";
 
-const chartDom = document.getElementById('main')!;
-var myChart = echarts.init(chartDom);
-var option: EChartsOption;
+const temperatureChartDom = document.getElementById('temperature_chart')!
+const temperatureChart = echarts.init(temperatureChartDom);
+const humidityChartDom = document.getElementById('humidity_chart')!
+const humidityChart = echarts.init(humidityChartDom);
 
-interface DataItem {
-  name: string;
-  value: [string, number];
+
+interface GraphData {
+  temperature: LineSeriesOption[]
+  humidity: LineSeriesOption[]
 }
 
-interface Series {
-  name: string
-  data: DataItem[]
-}
 
-async function getData() {
+async function getData(): Promise<GraphData> {
   const now = new Date()
   const one_day_ago = new Date(+now - (24 * 60 * 60 * 1000))
   const url = encodeURI(`/api/readings/?fields=device_name,mac,timestamp,temperature,humidity&timestamp__gt=${one_day_ago.toISOString()}&ordering=timestamp&limit=2000`)
-  const response = await fetch(url, {
-    headers: {
-      'Accept': 'application/msgpack'
-    }
-  })
-  const data = await decodeAsync(response.body!);
-
-  let series_data = new Map()
+  const data = await fetch(url).then((response) => response.json()!)
+  const temperature_series_data = new Map()
+  const humidity_series_data = new Map()
 
   for (const reading of data.results) {
     if (reading.temperature === null) {
       continue
     }
     const name = reading.device_name
-    if (!series_data.has(name)) {
-      series_data.set(name, 
+    if (!temperature_series_data.has(name)) {
+      temperature_series_data.set(name, 
+        {
+          name: name,
+          type: 'line',
+          showSymbol: false,
+          data: []
+        }
+      )
+      humidity_series_data.set(name, 
         {
           name: name,
           type: 'line',
@@ -62,21 +64,33 @@ async function getData() {
         }
       )
     }
-    series_data.get(name).data.push(
+    temperature_series_data.get(name).data.push(
       {
         name: name,
         value: [reading.timestamp, reading.temperature]
       }
     )
+    humidity_series_data.get(name).data.push(
+      {
+        name: name,
+        value: [reading.timestamp, reading.humidity]
+      }
+    )
   }
-  const series_array = Array.from(series_data, ([name, value]) => value)
-  series_array.sort((a, b) => a.name < b.name ? -1: 1);
-  return series_array
+  const temperature_series_array = Array.from(temperature_series_data, ([name, value]) => value)
+  const humidity_series_array = Array.from(humidity_series_data, ([name, value]) => value)
+  temperature_series_array.sort((a, b) => a.name < b.name ? -1: 1)
+  humidity_series_array.sort((a, b) => a.name < b.name ? -1: 1)
+  return {
+    "temperature": temperature_series_array,
+    "humidity": humidity_series_array
+  }
 }
 
-option = {
+temperatureChart.showLoading()
+temperatureChart.setOption<EChartsOption>({
   title: {
-    text: 'Temperature'
+    text: "Temperature"
   },
   legend: {    
     orient: 'horizontal',
@@ -108,27 +122,69 @@ option = {
     },
     minInterval: 1,
   },
-};
+})
+humidityChart.showLoading()
+humidityChart.setOption<EChartsOption>({
+  title: {
+    text: "Relative Humidity"
+  },
+  legend: {    
+    orient: 'horizontal',
+    bottom: 5
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      animation: false
+    }
+  },
+  xAxis: {
+    type: 'time',
+    splitLine: {
+      show: false
+    }
+  },
+  yAxis: {
+    type: 'value',
+    position: 'right',
+    //boundaryGap: [0, '100%'],
+    splitLine: {
+      show: true
+    },
+    min: 'dataMin',
+    max: 'dataMax',
+    axisLabel: {
+      formatter: '{value}%'
+    },
+    minInterval: 1,
+  },
+})
 
 
-myChart.showLoading()
-myChart.setOption<EChartsOption>(option)
-
-getData().then((value) => {
-  option['series'] = value
-  myChart.hideLoading()
-  myChart.setOption(option)
+getData().then((graph_data) => {
+  temperatureChart.hideLoading()
+  temperatureChart.setOption<EChartsOption>({
+    series: graph_data.temperature
+  })
+  humidityChart.hideLoading()
+  humidityChart.setOption<EChartsOption>({
+    series: graph_data.humidity
+  })
 })
 
 window.addEventListener('resize', function() {
-  myChart.resize();
+  temperatureChart.resize()
+  humidityChart.resize()
 });
 
 setInterval(() => {
   console.log("updating series data")
   getData().then((series_data) => {
-    myChart.setOption<EChartsOption>({
-      series: series_data
+    temperatureChart.setOption<EChartsOption>({
+      series: series_data.temperature
+    })
+    humidityChart.setOption<EChartsOption>({
+      series: series_data.humidity
     })
   })
 }, 1000 * 300)
