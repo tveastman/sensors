@@ -1,3 +1,3 @@
 django: ./manage.py runserver
-parcel: npm watch
+parcel: npm run watch
 

@@ -237,3 +237,6 @@ STORAGES = {
 STATICFILES_DIRS = [
     BASE_DIR / "dist",
 ]
+
+LOGIN_URL = "/api/auth/login/"
+LOGIN_REDIRECT_URL = "/"
