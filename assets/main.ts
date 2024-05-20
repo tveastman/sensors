@@ -11,6 +11,8 @@ import {
 import Graph from 'echarts/types/src/data/Graph.js';
 import { graphic_d } from 'echarts/types/dist/shared.js';
 
+import { roundToNearestMinutes } from 'date-fns';
+
 echarts.use([
   LineChart,
   CanvasRenderer,
@@ -33,6 +35,7 @@ interface GraphData {
 }
 
 
+
 async function getData(): Promise<GraphData> {
   const now = new Date()
   const one_day_ago = new Date(+now - (24 * 60 * 60 * 1000))
@@ -46,6 +49,7 @@ async function getData(): Promise<GraphData> {
       continue
     }
     const name = reading.device_name
+    const ts = roundToNearestMinutes(reading.timestamp)
     if (!temperature_series_data.has(name)) {
       temperature_series_data.set(name, 
         {
@@ -67,13 +71,13 @@ async function getData(): Promise<GraphData> {
     temperature_series_data.get(name).data.push(
       {
         name: name,
-        value: [reading.timestamp, reading.temperature]
+        value: [ts, reading.temperature]
       }
     )
     humidity_series_data.get(name).data.push(
       {
         name: name,
-        value: [reading.timestamp, reading.humidity]
+        value: [ts, reading.humidity]
       }
     )
   }

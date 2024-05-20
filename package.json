@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@msgpack/msgpack": "^3.0.0-beta2",
+    "date-fns": "^3.6.0",
     "echarts": "^5.5.0"
   },
   "source": [

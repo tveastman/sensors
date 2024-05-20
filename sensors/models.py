@@ -40,6 +40,11 @@ class Reading(models.Model):
     @property
     def device_name(self):
         return get_device_name(self.owner, self.mac)
+    
+    class Meta:
+        indexes = (
+            models.Index(fields=("owner", "timestamp")),
+        )
 
 
 class User(django.contrib.auth.models.AbstractUser):
