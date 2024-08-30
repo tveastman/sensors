@@ -1,23 +1,31 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static 'main.css' %}">
+    </head>
 <body>
 
-    <p><a href="{% url 'admin:index' %}">Admin</a></p>
-    <p><a href="{% url 'api-root' %}">API</a></p>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Sensors</a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'admin:index' %}">Admin</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{% url 'api-root' %}">API</a>
+            </li>
+        </ul>
+        </div>
+    </div>
+    </nav>
 
-    <style>
-        #temperature_chart, #humidity_chart,
-        html,
-        body {
-        width: 100%;
-        }
-        #temperature_chart, #humidity_chart {
-        height: 500px;
-        }
-    </style>
     <div class="chart" id="temperature_chart"></div>
     <div class="chart" id="humidity_chart"></div>
-    {% load static %}
+    <div id="app"></div>
     <script src="{% static 'main.js' %}"></script>
 </body>
 </html>

@@ -1,3 +1,10 @@
+import 'bootstrap/dist/css/bootstrap.css';
+import bootstrap from 'bootstrap';
+import './style.css';
+
+import React from "react";
+import { createRoot } from "react-dom/client";
+
 import * as echarts from 'echarts/core';
 import { EChartsOption, LineSeriesOption } from 'echarts';
 import { LineChart } from 'echarts/charts';
@@ -21,7 +28,6 @@ echarts.use([
   LegendComponent,
   GridComponent
 ])
-
 
 const temperatureChartDom = document.getElementById('temperature_chart')!
 const temperatureChart = echarts.init(temperatureChartDom);
@@ -192,3 +198,14 @@ setInterval(() => {
     })
   })
 }, 1000 * 300)
+
+
+
+const App = () => {
+  return (
+    <div>Here's a react app root!</div>
+  )
+}
+
+const root = createRoot(document.getElementById("app"));
+root.render(<App />);

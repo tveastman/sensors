@@ -12,4 +12,5 @@
 !/package.json
 !/package-lock.json
 
-!/assets/**/*.ts
+!/assets/**/*.tsx
+!/assets/**/*.css

@@ -1,0 +1,8 @@
+#temperature_chart, #humidity_chart,
+html,
+body {
+width: 100%;
+}
+#temperature_chart, #humidity_chart {
+height: 500px;
+}
