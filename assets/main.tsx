@@ -15,6 +15,7 @@ import {
   GridComponent,
   LegendComponent
 } from 'echarts/components';
+
 import Graph from 'echarts/types/src/data/Graph.js';
 import { graphic_d } from 'echarts/types/dist/shared.js';
 
@@ -29,20 +30,36 @@ echarts.use([
   GridComponent
 ])
 
-const temperatureChartDom = document.getElementById('temperature_chart')!
-const temperatureChart = echarts.init(temperatureChartDom);
-const humidityChartDom = document.getElementById('humidity_chart')!
-const humidityChart = echarts.init(humidityChartDom);
-
-
 interface GraphData {
   temperature: LineSeriesOption[]
   humidity: LineSeriesOption[]
 }
 
+// Updating the data into a global variable with a publish/subscribe mechanism
+let global_graph_data: GraphData | null = null;
+const pubSub = () => {
+  const callbacks: {()}[] = []
+
+  const publish = () => {
+    callbacks.forEach((callback) => {
+      console.log(`publishing to ${callback}`)
+      callback()
+    })
+  }
+
+  const subscribe = (callback: {()}) => {
+    console.log(`subscribed ${callback}`)
+    callbacks.push(callback)
+  }
+
+  return {publish, subscribe}
+}
+const pub_sub = pubSub()
 
 
 async function getData(): Promise<GraphData> {
+  // Fetch the data, set the global variable, and call "publish" to notify subscribers
+  console.log("start of getData()")
   const now = new Date()
   const one_day_ago = new Date(+now - (24 * 60 * 60 * 1000))
   const url = encodeURI(`/api/readings/?fields=device_name,mac,timestamp,temperature,humidity&timestamp__gt=${one_day_ago.toISOString()}&ordering=timestamp&limit=2000`)
@@ -91,16 +108,19 @@ async function getData(): Promise<GraphData> {
   const humidity_series_array = Array.from(humidity_series_data, ([name, value]) => value)
   temperature_series_array.sort((a, b) => a.name < b.name ? -1: 1)
   humidity_series_array.sort((a, b) => a.name < b.name ? -1: 1)
-  return {
+  const result = {
     "temperature": temperature_series_array,
     "humidity": humidity_series_array
   }
+  global_graph_data = result
+  pub_sub.publish()
+  console.log("end of getData()")
+  return result
 }
 
-temperatureChart.showLoading()
-temperatureChart.setOption<EChartsOption>({
+const defaultOption : EChartsOption = {
   title: {
-    text: "Temperature"
+    text: "Default Title"
   },
   legend: {    
     orient: 'horizontal',
@@ -132,80 +152,53 @@ temperatureChart.setOption<EChartsOption>({
     },
     minInterval: 1,
   },
-})
-humidityChart.showLoading()
-humidityChart.setOption<EChartsOption>({
-  title: {
-    text: "Relative Humidity"
-  },
-  legend: {    
-    orient: 'horizontal',
-    bottom: 5
-  },
-  tooltip: {
-    trigger: 'axis',
-    axisPointer: {
-      animation: false
-    }
-  },
-  xAxis: {
-    type: 'time',
-    splitLine: {
-      show: false
-    }
-  },
-  yAxis: {
-    type: 'value',
-    position: 'right',
-    //boundaryGap: [0, '100%'],
-    splitLine: {
-      show: true
-    },
-    min: 'dataMin',
-    max: 'dataMax',
-    axisLabel: {
-      formatter: '{value}%'
-    },
-    minInterval: 1,
-  },
-})
+}
 
-
-getData().then((graph_data) => {
-  temperatureChart.hideLoading()
-  temperatureChart.setOption<EChartsOption>({
-    series: graph_data.temperature
-  })
-  humidityChart.hideLoading()
-  humidityChart.setOption<EChartsOption>({
-    series: graph_data.humidity
-  })
-})
-
-window.addEventListener('resize', function() {
-  temperatureChart.resize()
-  humidityChart.resize()
-});
-
+// Fetch the data on an interval
+const update_data_interval = 1000 * 300;
+getData()
 setInterval(() => {
-  console.log("updating series data")
-  getData().then((series_data) => {
-    temperatureChart.setOption<EChartsOption>({
-      series: series_data.temperature
+  getData()
+}, update_data_interval)
+
+
+const Chart = ({title, aspect, formatter}) => {
+  console.log(`aspect=${aspect}`)
+  const id = `${aspect}_chart`
+  const chartDomRef = React.useRef(null);
+
+  React.useEffect(() => {
+    console.log(`executing chart useEffect ref=${chartDomRef.current}`)
+    const chart = echarts.init(chartDomRef.current, 'dark')
+    const option = {...defaultOption}
+    option.yAxis.axisLabel.formatter = formatter
+    option.title.text = title
+    window.addEventListener('resize', () => {chart.resize()})
+    chart.setOption(option)
+
+    pub_sub.subscribe(() => {
+      // "subscribe" to the global variable to update the chart.
+      console.log("got data?")
+      chart.setOption({series: global_graph_data[aspect]})
     })
-    humidityChart.setOption<EChartsOption>({
-      series: series_data.humidity
-    })
-  })
-}, 1000 * 300)
 
+  }, [])
 
-
-const App = () => {
   return (
-    <div>Here's a react app root!</div>
+    <>
+      <div id={id} ref={chartDomRef}></div>
+    </>
   )
 }
 
-const root = createRoot(document.getElementById("app"));
+const App = () => {
+  return (
+    <>
+      <Chart title="Temperature" aspect="temperature" formatter="{value}°C"/>
+      <Chart title="Humidity" aspect="humidity" formatter="{value}%"/>
+    </>
+  )
+}
+
+const root = createRoot(document.getElementById("app"))
 root.render(<App />);
