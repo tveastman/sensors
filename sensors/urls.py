@@ -31,4 +31,9 @@ urlpatterns = [
     path("api/", include(router.urls)),
     path("api/auth/", include("rest_framework.urls", namespace="rest_framework")),
     # path("test/", sensors.views.Test.as_view(), name="test"),
+    path(
+        "download-parquet/",
+        sensors.views.DownloadParquet.as_view(),
+        name="download=parquet",
+    ),
 ]

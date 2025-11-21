@@ -17,6 +17,7 @@ django-filter = "^24.2"
 djangorestframework-queryfields = "^1.1.0"
 pip = "^24.0"
 djangorestframework-msgpack = "^1.0.2"
+polars = {extras = ["connectorx", "pyarrow"], version = "^1.35.2"}
 
 
 [tool.poetry.group.dev.dependencies]

@@ -1,11 +1,16 @@
 import django.views
+import django.http
+import django.db
+import django.conf
 import json
+import io
 
 import structlog
 import rest_framework.filters
 import rest_framework.viewsets
 import rest_framework.permissions
 from django.contrib.auth.mixins import LoginRequiredMixin
+import polars as pl
 
 import sensors.serializers
 import sensors.permissions
@@ -87,3 +92,33 @@ class Chart(LoginRequiredMixin, django.views.generic.TemplateView):
 
 class Test(django.views.generic.TemplateView):
     template_name = "test.html"
+
+
+class DownloadParquet(LoginRequiredMixin, django.views.View):
+    def get(self, request, *args, **kwargs):
+        logger.info("DownloadParquet", args=args, kwargs=kwargs)
+        owner_id = request.user.id.hex
+
+        database_filename = django.conf.settings.DATABASES["default"]["NAME"]
+        uri = f"sqlite://{database_filename}"
+        query = f"SELECT * FROM sensors_reading WHERE owner_id = '{owner_id}'"
+        df = pl.read_database_uri(
+            query=query,
+            uri=uri,
+            schema_overrides={
+                "timestamp": pl.Datetime(time_zone="NZ"),
+            },
+        )
+
+        logger.info(
+            "dataframe created",
+            estimated_size_mb=str(df.estimated_size("mb")),
+            owner_id=owner_id,
+        )
+
+        parquet_file = io.BytesIO()
+        df.write_parquet(parquet_file)
+        parquet_file.seek(0)
+        return django.http.FileResponse(
+            parquet_file, as_attachment=True, filename="readings.parquet"
+        )
